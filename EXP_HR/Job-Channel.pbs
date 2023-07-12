@@ -1,0 +1,148 @@
+#!/bin/bash
+
+#PBS -q mpi_7
+#PBS -l walltime=04:00:00
+## Perhaps move commands to another file to directly capture their output
+## Job-Channel.pbs >& ${SCRATCH}/nemo_expt/dev_exp/model.out
+
+module purge
+source /usr/share/Modules/3.2.10/init/bash
+module load   NETCDF/4.3.3.1-mpt-intel2016
+module list
+
+# Experiment path
+expt_path=${SCRATCH}/nemo_expt_4.2.0/ice_heat_param_exp
+# Path to dump data after running
+test_output=${SCRATCH}/dump_ice_heat_exp
+DEBUG=0
+
+restart_timestes=219000
+
+# Move to working directory
+cd $expt_path
+source ../functions_pbs.sh # Distrubute file, if I forget, contact josue.mtzmo@gmail.com
+
+# function to get experiment folders
+last_expt=$(printf "%03d" "$(expt_folders $test_output)")
+last_output_expt_Folder=$test_output/expt_$last_expt
+echo $last_output_expt_Folder
+
+# Check if there are differences between namlists, if not, assume this is a restart run:
+file1=./namelist_cfg
+file2=$last_output_expt_Folder/namelist_cfg
+status_oce=$(diff "$file1" "$file2")
+file1=./namelist_ice_cfg
+file2=$last_output_expt_Folder/namelist_ice_cfg
+status_ice=$(diff "$file1" "$file2")
+
+if [[ -z "$status_oce" && -z "$status_ice" && $? -eq 0 ]] ;  then
+   # If config files are equal, then the experiment restarts.
+   printf 'The config files are identical ice and ocean\n'
+   printf 'The config will be used as a RESTART.\n'
+   new_expt=$(printf "%03d" "${last_expt#0}")
+   if compgen -G "$test_output/expt_$new_expt/*_restart_*.nc" > /dev/null; then
+      echo "Restart files exist in exp folder; File moved to exp restart folder"
+      # Move all restart files to folder
+      mv $test_output/expt_$new_expt/*_restart_*.nc $test_output/expt_$new_expt/restart/
+      # Get last restart file and it's common names
+      last_restart=$(ls -t $test_output/expt_$new_expt/restart/*restart*.nc | head -1)
+      split_restart_name="${last_restart%%"_restart_"*}"
+      # Move last restart to expt folder
+      mv $split_restart_name*.nc $test_output/expt_$new_expt/
+      echo "File will be restarted using $split_restart_name"
+   elif compgen -G "$test_output/expt_$new_expt/*abort*.nc" > /dev/null; then 
+      echo "Experiment aborted, stop resubmission of Job."
+      exit 1
+   elif compgen -G "$test_output/expt_$new_expt/restart/*_restart_*.nc" > /dev/null; then
+      last_restart=$(ls -t $test_output/expt_$new_expt/restart/*restart*.nc | head -1)
+      split_restart_name="${last_restart%%"_restart_"*}"
+      # Move last restart to expt folder
+      mv $split_restart_name*.nc $test_output/expt_$new_expt/
+      echo "File will be restarted using $split_restart_name"
+   else
+      echo "No restart file found, make sure restart file exists."
+      exit 2
+   fi
+   ln -s $last_output_expt_Folder/*_restart_*.nc . 
+   cp ./namelist_cfg ./namelist_cfg_before_restart
+   common_string=$(common_ls_name "*_restart_*.nc")
+   IFS='_' read -r -a split_array <<< "$common_string"
+   iter=$(echo ${split_array[2]})
+   int_iter=$(printf "%1.0f" "${iter#0}")
+   rename $common_string "restart_" *
+   sed '/^   ! Auto-Insert.*/a \ \ \ ln_rstart   = .true.    !  start from rest (F) or from a restart file (T)\n\ \ \ \ \ \ nn_rstctl   =    2      !  restart control ==> activated only if ln_rstart=T' ./namelist_cfg_before_restart > ./namelist_cfg
+   set_config nn_it000 $((int_iter+1)) ./namelist_cfg
+   set_config nn_itend $((int_iter+restart_timestes)) ./namelist_cfg
+elif [ -z "$status_ice" ]; then
+   printf 'The ocean config file is different.'
+   printf ' a new experiment will be run from scratch'
+   int_expt=$(printf "%d" "${last_expt#0}")
+   new_expt=$(printf "%03d" "$((int_expt+1))")
+elif [ -z "$status_oce" ]; then
+   printf 'The ice config file is different.'
+   printf ' a new experiment will be run from scratch'
+   int_expt=$(printf "%d" "${last_expt#0}")
+   new_expt=$(printf "%03d" "$((int_expt+1))")
+else
+   # If config files are different then the experiment resets and a new expt is created
+   printf 'The config files are different.'
+   printf 'The experment will run from scratch.'
+   int_expt=$(printf "%d" "${last_expt#0}")
+   new_expt=$(printf "%03d" "$((int_expt+1))")
+fi
+
+start_time="$(date -u +%s)"
+# Run model 
+if [ $DEBUG -eq 1 ]; then
+  sleep 5
+else
+  $MPI_LAUNCH  -np 196 ./nemo  >& ./mpi_model.output
+fi
+end_time="$(date -u +%s)"
+elapsed="$(($end_time-$start_time))"
+
+# Print wall time of mpirun job
+echo; printf '=%.0s' {1..50}; echo
+echo 'Elapsed time: '${elapsed}'s | '$((elapsed/60))'min'
+printf '=%.0s' {1..50}; echo
+
+if [ $DEBUG -eq 1 ]; then
+  cp ./namelist_cfg ./namelist_cfg_test
+  sleep 5
+fi
+
+# Revert to original unmodified namelist. 
+# The only change is to turn on or off the restart option
+cp -d ./namelist_cfg_before_restart ./namelist_cfg
+rm -f ./namelist_cfg_before_restart
+
+rm -f restart_*.nc
+# Create directory to store data output
+echo "Files will be stored in the experiment: "$new_expt
+mkdir -p $test_output/expt_$new_expt 
+
+# Create Readme to keep track of git changes
+echo "## EXPERIMENT #$new_expt"  > $test_output/expt_$new_expt/README.md
+echo "------------------"        >> $test_output/expt_$new_expt/README.md
+
+# Move to git folder to get the log and changes
+cd `dirname $(readlink -f Job-Channel.pbs)`
+git rev-parse --short HEAD >> $test_output/expt_$new_expt/README.md
+echo "------------------"        >> $test_output/expt_$new_expt/README.md
+git status                 >> $test_output/expt_$new_expt/README.md
+echo "------------------"        >> $test_output/expt_$new_expt/README.md
+git shortlog               >> $test_output/expt_$new_expt/README.md
+echo "------------------"        >> $test_output/expt_$new_expt/README.md
+
+## Copy all files to different directory
+cd $expt_path
+if [ -z "$status"]; then
+   mkdir -p  $test_output/expt_$new_expt/restart
+   mv $test_output/expt_$new_expt/*_restart_*.nc $test_output/expt_$new_expt/restart/
+fi
+#rsync --remove-source-files *.nc *output* *.dat *.txt *step  $test_output/expt_$new_expt/
+mv *.nc *output* *.dat *.txt *step  $test_output/expt_$new_expt/
+
+echo "Copy namelists to backup folder"
+rsync --copy-links namelist_cfg namelist_ice_cfg $test_output/expt_$new_expt/
+

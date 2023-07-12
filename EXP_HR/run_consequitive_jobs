@@ -1,0 +1,8 @@
+qsub -h -N sea_ice_seasonal_1 Job-Channel.pbs
+qstat -u jmartine
+qsub -N sea_ice_seasonal_2 -W depend=afterok:$(qselect -N sea_ice_seasonal_1 -u $USER) ./Job-Channel.pbs
+qstat -u jmartine
+#qsub -N sea_ice_seasonal_3 -W depend=afterok:$(qselect -N sea_ice_seasonal_2 -u $USER) ./Job-Channel.pbs
+#qstat -u jmartine
+qrls $(qselect -N sea_ice_seasonal_1 -u $USER)
+qstat -u jmartine

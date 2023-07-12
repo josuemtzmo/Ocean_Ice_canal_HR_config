@@ -1,0 +1,12 @@
+# Ignore netcdf
+*.nc
+# Ignore backup files
+*_bk
+# Ignore folders
+BLD*
+WORK
+# Ignore notebook stuff
+.ipynb_checkpoints
+__pycache__/*
+__pycache__
+dask-worker-space
