@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#PBS -q mpi_7
-#PBS -l walltime=04:00:00
+#PBS -q mpi_9
+#PBS -l walltime=24:00:00
 ## Perhaps move commands to another file to directly capture their output
 ## Job-Channel.pbs >& ${SCRATCH}/nemo_expt/dev_exp/model.out
 
@@ -11,9 +11,9 @@ module load   NETCDF/4.3.3.1-mpt-intel2016
 module list
 
 # Experiment path
-expt_path=${SCRATCH}/nemo_expt_4.2.0/ice_heat_param_exp
+expt_path=${SCRATCH}/nemo_expt_4.2.0/ice_canal_HR
 # Path to dump data after running
-test_output=${SCRATCH}/dump_ice_heat_exp
+test_output=${SCRATCH}/dump_ice_canal_HR
 DEBUG=0
 
 restart_timestes=219000
@@ -39,7 +39,8 @@ if [[ -z "$status_oce" && -z "$status_ice" && $? -eq 0 ]] ;  then
    # If config files are equal, then the experiment restarts.
    printf 'The config files are identical ice and ocean\n'
    printf 'The config will be used as a RESTART.\n'
-   new_expt=$(printf "%03d" "${last_expt#0}")
+   new_expt=$(printf "%03d" "$((10#$last_expt))")
+   echo $test_output/expt_$new_expt/*_restart_*.nc
    if compgen -G "$test_output/expt_$new_expt/*_restart_*.nc" > /dev/null; then
       echo "Restart files exist in exp folder; File moved to exp restart folder"
       # Move all restart files to folder
@@ -76,18 +77,18 @@ if [[ -z "$status_oce" && -z "$status_ice" && $? -eq 0 ]] ;  then
 elif [ -z "$status_ice" ]; then
    printf 'The ocean config file is different.'
    printf ' a new experiment will be run from scratch'
-   int_expt=$(printf "%d" "${last_expt#0}")
+   int_expt=$(printf "%d" "$((10#$last_expt))")
    new_expt=$(printf "%03d" "$((int_expt+1))")
 elif [ -z "$status_oce" ]; then
    printf 'The ice config file is different.'
    printf ' a new experiment will be run from scratch'
-   int_expt=$(printf "%d" "${last_expt#0}")
+   int_expt=$(printf "%d" "$((10#$last_expt))")
    new_expt=$(printf "%03d" "$((int_expt+1))")
 else
    # If config files are different then the experiment resets and a new expt is created
    printf 'The config files are different.'
    printf 'The experment will run from scratch.'
-   int_expt=$(printf "%d" "${last_expt#0}")
+   int_expt=$(printf "%d" "$((10#$last_expt))")
    new_expt=$(printf "%03d" "$((int_expt+1))")
 fi
 
@@ -96,7 +97,7 @@ start_time="$(date -u +%s)"
 if [ $DEBUG -eq 1 ]; then
   sleep 5
 else
-  $MPI_LAUNCH  -np 196 ./nemo  >& ./mpi_model.output
+  $MPI_LAUNCH  -np 252 ./nemo  >& ./mpi_model.output
 fi
 end_time="$(date -u +%s)"
 elapsed="$(($end_time-$start_time))"
@@ -141,7 +142,7 @@ if [ -z "$status"]; then
    mv $test_output/expt_$new_expt/*_restart_*.nc $test_output/expt_$new_expt/restart/
 fi
 #rsync --remove-source-files *.nc *output* *.dat *.txt *step  $test_output/expt_$new_expt/
-mv *.nc *output* *.dat *.txt *step  $test_output/expt_$new_expt/
+mv *.nc *output* *.dat *.txt *step *.xml  $test_output/expt_$new_expt/
 
 echo "Copy namelists to backup folder"
 rsync --copy-links namelist_cfg namelist_ice_cfg $test_output/expt_$new_expt/

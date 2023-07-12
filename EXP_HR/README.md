@@ -1,7 +1,3 @@
-compiled with:
-
-./makenemo -a 'CANAL' -d 'OCE ICE' -n 'ICE_CANAL_UHR' -m X64_DATARMORMPI -j 128 add_key 'key_si3 key_mpi2 key_linssh' del_key 'key_qco'
-
 The structure of the experiment follows the structure:
 
  tree

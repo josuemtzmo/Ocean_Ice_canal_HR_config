@@ -1,0 +1,50 @@
+#!/bin/bash
+#PBS -l mem=50g
+#PBS -l walltime=20:00:00
+#PBS -N Cp_channel_sim
+
+# set -xv 
+
+cd $PBS_O_WORKDIR
+
+SCRATCH_DIR=/home1/scratch/jmartine/
+
+EXPE=ice_canal_HR
+
+cd /home/datawork-lops-drakkarcom/SIMULATION-OUTPUTS/ICE-CHANEL/${EXPE}_output/
+
+for dir in `ls -d ${SCRATCH_DIR}dump_${EXPE}/expt*`;   do
+   # echo $dir
+   # Get the experiment name
+   ddir=`basename $dir`
+   files=$(ls -lp ${SCRATCH_DIR}dump_${EXPE}/${ddir}/ | wc -l)
+   if [ $files -le 3  ]; then echo "No back up of: "$ddir; continue ; else echo "Backup of: "$ddir; fi
+   if [ ! -d ${ddir} ] ; then mkdir $ddir ; fi
+   cd $ddir 
+   rsync -rlLtgoDv --progress --ignore-errors --exclude 'restart/*' --remove-source-files  --force ${SCRATCH_DIR}/dump_${EXPE}/${ddir}/*.nc .
+   rsync -rlLtgoDv --progress --ignore-errors --exclude 'restart/*' --force ${SCRATCH_DIR}/dump_${EXPE}/${ddir}/* .
+   cd ..
+done 
+
+echo $PBS_JOBNAME
+num="${PBS_JOBNAME#*_}"
+
+if (( 3 < $num )); then 
+  echo "Move file_def's to output every 3 hrs"; 
+  if [ -f "/home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_hf" ]; then
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml  /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_lf
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_hf /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml  /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml_lf
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml_hf /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml
+  fi
+else
+  echo "Move file_def's to output only 1 per day"; 
+  if [ -f "/home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_lf" ]; then
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_hf
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_lf  /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml_hf
+    mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml_lf  /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml
+  fi
+fi;
+
+

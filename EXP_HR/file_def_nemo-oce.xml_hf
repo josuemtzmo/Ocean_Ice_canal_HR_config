@@ -64,4 +64,57 @@
 
       </file_group>
 
+      <file_group id="3h" output_freq="3h"  split_freq="9d"  output_level="10" enabled=".TRUE." > 
+ 
+	<file id="file7" name_suffix="_grid_T_3h" description="ocean T grid variables" >
+	  <field field_ref="toce"    /> 
+	  <field field_ref="soce"    /> 
+	  <field field_ref="ssh"     />
+	  <field field_ref="ke"    />
+<!--
+          <field field_ref="relvor"  />
+          <field field_ref="potvor"  />
+          <field field_ref="absvor"  />
+-->
+          <field field_ref="mldr10_1"  />
+          <field field_ref="samldr10_1"  />
+	</file>
+
+        <file id="file8" name_suffix="_grid_FLX_3h" description="ocean T grid variables" >
+          <field field_ref="qlw_oce"    />
+          <field field_ref="qsb_oce"    />
+          <field field_ref="qla_oce"    />
+          <field field_ref="qt_oce"    />
+          <field field_ref="qsr_oce"    />
+          <field field_ref="qns_oce"    />
+          <field field_ref="qemp_oce"    />
+          <field field_ref="taum_oce"    />
+        </file>
+
+	<file id="file9" name_suffix="_grid_U_3h" description="ocean U grid variables" >
+	  <field field_ref="uoce" />
+	</file>
+	
+	<file id="file10" name_suffix="_grid_V_3h" description="ocean V grid variables" >
+	  <field field_ref="voce" />
+	</file>
+	
+	<file id="file11" name_suffix="_grid_W_3h" description="ocean W grid variables" >
+	  <field field_ref="woce" />
+	  <field field_ref="bn2" />
+	</file>
+	
+	 <file id="file12" name_suffix="_grid_SBC_3h" description="ocean surface boundary condition variables" >
+          <field field_ref="qt"   />
+          <field field_ref="empmr"   />
+          <field field_ref="qns"  />
+          <field field_ref="qsr"  />
+          <field field_ref="taum" />
+          <field field_ref="saltflx" />
+          <field field_ref="fmmflx" />
+	
+        </file>
+
+      </file_group>
+
    </file_definition>
