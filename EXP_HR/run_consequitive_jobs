@@ -10,60 +10,60 @@ fi
 
 # RUN JOB
 # Submit 1st job
-qsub -h -N sea_ice_seasonal_1 Job-Channel.pbs
+qsub -h -N sea_ice_HD_1 Job-Channel.pbs
 qstat -u jmartine
 
 # Store output 
-qsub -N copy_1 -W depend=afterok:$(qselect -N sea_ice_seasonal_1 -u $USER) ./copy_out_of_scratch.pbs
+qsub -N copy_1 -W depend=afterok:$(qselect -N sea_ice_HD_1 -u $USER) ./copy_out_of_scratch.pbs
 
 # Submit 2nd Job 
-qsub -N sea_ice_seasonal_2 -W depend=afterok:$(qselect -N copy_1 -u $USER) ./Job-Channel.pbs
+qsub -N sea_ice_HD_2 -W depend=afterok:$(qselect -N copy_1 -u $USER) ./Job-Channel.pbs
 
 # Store output 
-qsub -N copy_2 -W depend=afterok:$(qselect -N sea_ice_seasonal_2 -u $USER) ./copy_out_of_scratch.pbs
+qsub -N copy_2 -W depend=afterok:$(qselect -N sea_ice_HD_2 -u $USER) ./copy_out_of_scratch.pbs
 
-# Submit 2nd Job 
-qsub -N sea_ice_seasonal_3 -W depend=afterok:$(qselect -N copy_2 -u $USER) ./Job-Channel.pbs
+# Submit 3rd Job 
+qsub -N sea_ice_HD_3 -W depend=afterok:$(qselect -N copy_2 -u $USER) ./Job-Channel.pbs
 
 # Store output 
-qsub -N copy_3 -W depend=afterok:$(qselect -N sea_ice_seasonal_3 -u $USER) ./copy_out_of_scratch.pbs
+qsub -N copy_3 -W depend=afterok:$(qselect -N sea_ice_HD_3 -u $USER) ./copy_out_of_scratch.pbs
 
 # Print submitted jobs
 qstat -u jmartine
 
-# Submit 2nd Job
-qsub -N sea_ice_seasonal_4 -W depend=afterok:$(qselect -N copy_3 -u $USER) ./Job-Channel.pbs
+# Submit 4th Job
+#qsub -N sea_ice_HD_4 -W depend=afterok:$(qselect -N copy_3 -u $USER) ./Job-Channel.pbs
 
 # Store output
-qsub -N copy_4 -W depend=afterok:$(qselect -N sea_ice_seasonal_4 -u $USER) ./copy_out_of_scratch.pbs
+#qsub -N copy_4 -W depend=afterok:$(qselect -N sea_ice_HD_4 -u $USER) ./copy_out_of_scratch.pbs
 
-# Submit 2nd Job
-qsub -N sea_ice_seasonal_5 -W depend=afterok:$(qselect -N copy_4 -u $USER) ./Job-Channel.pbs
+# Submit 5th Job
+#qsub -N sea_ice_HD_5 -W depend=afterok:$(qselect -N copy_4 -u $USER) ./Job-Channel.pbs
 
 # Store output
-qsub -N copy_5 -W depend=afterok:$(qselect -N sea_ice_seasonal_5 -u $USER) ./copy_out_of_scratch.pbs
+#qsub -N copy_5 -W depend=afterok:$(qselect -N sea_ice_HD_5 -u $USER) ./copy_out_of_scratch.pbs
 
 # Print submitted jobs
-qstat -u jmartine
+# qstat -u jmartine
 
 # Submit 2nd Job
-qsub -N sea_ice_seasonal_6 -W depend=afterok:$(qselect -N copy_5 -u $USER) ./Job-Channel.pbs
+#qsub -N sea_ice_HD_6 -W depend=afterok:$(qselect -N copy_5 -u $USER) ./Job-Channel.pbs
 
 # Store output
-qsub -N copy_6 -W depend=afterok:$(qselect -N sea_ice_seasonal_6 -u $USER) ./copy_out_of_scratch.pbs
+#qsub -N copy_6 -W depend=afterok:$(qselect -N sea_ice_HD_6 -u $USER) ./copy_out_of_scratch.pbs
 
 # Submit 2nd Job
-qsub -N sea_ice_seasonal_7 -W depend=afterok:$(qselect -N copy_6 -u $USER) ./Job-Channel.pbs
+#qsub -N sea_ice_HD_7 -W depend=afterok:$(qselect -N copy_6 -u $USER) ./Job-Channel.pbs
 
 # Store output
-qsub -N copy_7 -W depend=afterok:$(qselect -N sea_ice_seasonal_7 -u $USER) ./copy_out_of_scratch.pbs
+#qsub -N copy_7 -W depend=afterok:$(qselect -N sea_ice_HD_7 -u $USER) ./copy_out_of_scratch.pbs
 
 # Submit 2nd Job
-qsub -N sea_ice_seasonal_8 -W depend=afterok:$(qselect -N copy_7 -u $USER) ./Job-Channel.pbs
+#qsub -N sea_ice_HD_8 -W depend=afterok:$(qselect -N copy_7 -u $USER) ./Job-Channel.pbs
 
 # Store output
-qsub -N copy_8 -W depend=afterok:$(qselect -N sea_ice_seasonal_8 -u $USER) ./copy_out_of_scratch.pbs
+#qsub -N copy_8 -W depend=afterok:$(qselect -N sea_ice_HD_8 -u $USER) ./copy_out_of_scratch.pbs
 
 # Release first Job
-qrls $(qselect -N sea_ice_seasonal_1 -u $USER)
+qrls $(qselect -N sea_ice_HD_1 -u $USER)
 qstat -u jmartine

@@ -236,12 +236,12 @@
    rn_hld_ini_s     =   0.0           !        "            "             South
    ! -- for nn_iceini_file = 1
    cn_dir='./init/hr_canal/'
-   sn_hti = 'HR_channel_ice_h1m_c05'    , -12 ,'hti'   ,  .false.  , .true., 'yearly'  , '' , '', ''
-   sn_hts = 'HR_channel_ice_h1m_c05'    , -12 ,'hts'   ,  .false.  , .true., 'yearly'  , '' , '', ''
-   sn_ati = 'HR_channel_ice_h1m_c05'    , -12 ,'ati'   ,  .false.  , .true., 'yearly'  , '' , '', ''
-   sn_smi = 'HR_channel_ice_h1m_c05'    , -12 ,'smi'   ,  .false.  , .true., 'yearly'  , '' , '', ''
-   sn_tmi = 'HR_channel_ice_h1m_c05'    , -12 ,'tmi'   ,  .false.  , .true., 'yearly'  , '' , '', ''
-   sn_tsu = 'HR_channel_ice_h1m_c05'    , -12 ,'tsu'   ,  .false.  , .true., 'yearly'  , '' , '', ''
+   sn_hti = 'HR_channel_ice_h1m_c05_test_noise'    , -12 ,'hti'   ,  .false.  , .true., 'yearly'  , '' , '', ''
+   sn_hts = 'HR_channel_ice_h1m_c05_test_noise'    , -12 ,'hts'   ,  .false.  , .true., 'yearly'  , '' , '', ''
+   sn_ati = 'HR_channel_ice_h1m_c05_test_noise'    , -12 ,'ati'   ,  .false.  , .true., 'yearly'  , '' , '', ''
+   sn_smi = 'HR_channel_ice_h1m_c05_test_noise'    , -12 ,'smi'   ,  .false.  , .true., 'yearly'  , '' , '', ''
+   sn_tmi = 'HR_channel_ice_h1m_c05_test_noise'    , -12 ,'tmi'   ,  .false.  , .true., 'yearly'  , '' , '', ''
+   sn_tsu = 'HR_channel_ice_h1m_c05_test_noise'    , -12 ,'tsu'   ,  .false.  , .true., 'yearly'  , '' , '', ''
    sn_tms = 'NOT USED'              , -12 ,'tms'   ,  .false.  , .true., 'yearly'  , '' , '', ''
    !      melt ponds (be careful, sn_apd is the pond concentration (not fraction), so it differs from rn_apd)
    sn_apd = 'NOT USED'              , -12 ,'apd'   ,  .false.  , .true., 'yearly'  , '' , '', ''

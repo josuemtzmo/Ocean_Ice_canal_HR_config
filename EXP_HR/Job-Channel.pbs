@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q mpi_9
-#PBS -l walltime=24:00:00
+#PBS -l walltime=40:00:00
 ## Perhaps move commands to another file to directly capture their output
 ## Job-Channel.pbs >& ${SCRATCH}/nemo_expt/dev_exp/model.out
 
@@ -16,7 +16,7 @@ expt_path=${SCRATCH}/nemo_expt_4.2.0/ice_canal_HR
 test_output=${SCRATCH}/dump_ice_canal_HR
 DEBUG=0
 
-restart_timestes=219000
+restart_timestes=109500
 
 # Move to working directory
 cd $expt_path
@@ -142,7 +142,8 @@ if [ -z "$status"]; then
    mv $test_output/expt_$new_expt/*_restart_*.nc $test_output/expt_$new_expt/restart/
 fi
 #rsync --remove-source-files *.nc *output* *.dat *.txt *step  $test_output/expt_$new_expt/
-mv *.nc *output* *.dat *.txt *step *.xml  $test_output/expt_$new_expt/
+mv *.nc $test_output/expt_$new_expt/ 
+cp *output* *.dat *.txt *step *.xml  $test_output/expt_$new_expt/
 
 echo "Copy namelists to backup folder"
 rsync --copy-links namelist_cfg namelist_ice_cfg $test_output/expt_$new_expt/

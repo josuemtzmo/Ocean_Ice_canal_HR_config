@@ -19,13 +19,13 @@
 !-----------------------------------------------------------------------
 &namusr_def    !   User defined :   CANAL configuration: Flat bottom, beta-plane
 !-----------------------------------------------------------------------
-   rn_domszx   =    100.   !  x horizontal size         [km]
-   rn_domszy   =    100.   !  y horizontal size         [km]
+   rn_domszx   =    200.   !  x horizontal size         [km]
+   rn_domszy   =    300.   !  y horizontal size         [km]
    rn_domszz   =     50.   !  z vertical size            [m]
-   rn_dx       =      0.2  !  x horizontal resolution   [km]
-   rn_dy       =      0.2  !  y horizontal resolution   [km]
+   rn_dx       =      0.25 !  x horizontal resolution   [km]
+   rn_dy       =      0.25 !  y horizontal resolution   [km]
    rn_dz       =      1.   !  z vertical resolution      [m]
-   rn_maxz     =    800.   !  max depth                  [m]
+   rn_maxz     =    500.   !  max depth                  [m]
    rn_0xratio  =      0.5  !  x-domain ratio of the 0
    rn_0yratio  =      0.5  !  y-domain ratio of the 0
    nn_fcase    =      0    !  F computation (0:f0, 1:Beta, 2:real)
@@ -58,7 +58,7 @@
    nn_no       =       0   !  job number (no more used...)
    cn_exp      ='ICE_CANAL'!  experience name
    nn_it000    =       1   !  first time step
-   nn_itend    =  162000   !  last time step 
+   nn_itend    =  109500   !  last time step 
    nn_date0    =  00010501 !  date at nit_0000 (format yyyymmdd) used if ln_rstart=F or (ln_rstart=T and nn_rstctl=0 or 1)
    nn_istate   =       0   !  output the initial state (1) or not (0)
    ln_rst_list = .false.   !  output restarts at list of times using nn_stocklist (T) or at set frequency with nn_stock (F)
@@ -73,14 +73,14 @@
 &namdom        !   time and space domain
 !-----------------------------------------------------------------------
    ln_linssh   =  .true.   !  =T  linear free surface  ==>>  model level are fixed in time
-   rn_Dt      =     48.    !  time step for the dynamics (and tracer if nn_acc=0)
+   rn_Dt      =     60.    !  time step for the dynamics (and tracer if nn_acc=0)
    rn_atfp     =   0.05    !  asselin time filter parameter
    ln_meshmask = .false.   !  =T  create a mesh file
 /
 !-----------------------------------------------------------------------
 &namcfg        !   parameters of the configuration                      (default: use namusr_def in namelist_cfg)
 !-----------------------------------------------------------------------
-   ln_write_cfg = .false.   !  (=T) create the domain configuration file
+   ln_write_cfg = .false.  !  (=T) create the domain configuration file
       cn_domcfg_out = "domain_cfg" ! newly created domain configuration filename
 /
 !-----------------------------------------------------------------------
@@ -205,13 +205,13 @@
 !-----------------------------------------------------------------------
 &namdrg        !   top/bottom drag coefficient                          (default: NO selection)
 !-----------------------------------------------------------------------
-   ln_drg_OFF = .false.    !  free-slip       : Cd = 0                  (F => fill namdrg_bot
+   ln_drg_OFF  = .false.   !  free-slip       : Cd = 0                  (F => fill namdrg_bot
    ln_lin      = .false.   !      linear  drag: Cd = Cd0 Uc0                   &   namdrg_top)
    ln_non_lin  = .false.   !  non-linear  drag: Cd = Cd0 |U|
    ln_loglayer = .true.    !  logarithmic drag: Cd = vkarmn/log(z/z0) |U|
    !
    ln_drgimp   = .true.    !  implicit top/bottom friction flag
-      ln_drgice_imp = .true.  ! implicit ice-ocean drag
+      ln_drgice_imp = .false. ! implicit ice-ocean drag
 /
 !-----------------------------------------------------------------------
 &namdrg_top    !   TOP friction                                         (ln_drg_OFF =F & ln_isfcav=T)

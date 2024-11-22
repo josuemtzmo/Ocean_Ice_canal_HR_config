@@ -40,10 +40,12 @@
 
 	<file id="file3" name_suffix="_grid_U" description="ocean U grid variables" >
 	  <field field_ref="uoce" />
+	  <field field_ref="utau" />
 	</file>
 	
 	<file id="file4" name_suffix="_grid_V" description="ocean V grid variables" >
 	  <field field_ref="voce" />
+	  <field field_ref="vtau" />
 	</file>
 	
 	<file id="file5" name_suffix="_grid_W" description="ocean W grid variables" >

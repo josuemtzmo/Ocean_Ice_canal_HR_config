@@ -43,6 +43,13 @@
           <field field_ref="vice"             name="sivelv"  />
           <field field_ref="icevel"           name="sivelo"  />
 
+          <field field_ref="utau_ai"          name="utau_ai"  />
+          <field field_ref="vtau_ai"          name="vtau_ai"  />
+          <field field_ref="utau_oi"          name="utau_oi"  />
+          <field field_ref="vtau_oi"          name="vtau_oi"  />
+          <field field_ref="utau_ice"         name="utau_ice"  />
+          <field field_ref="vtau_ice"         name="vtau_ice"  />
+
         </file>
 
         <file id="file14" name_suffix="_icefor" description="ice surface heat flux" enabled=".true." >
