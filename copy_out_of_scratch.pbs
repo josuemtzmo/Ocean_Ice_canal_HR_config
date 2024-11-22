@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l mem=50g
+#PBS -l mem=20g
 #PBS -l walltime=20:00:00
 #PBS -N Cp_channel_sim
 
@@ -21,7 +21,7 @@ for dir in `ls -d ${SCRATCH_DIR}dump_${EXPE}/expt*`;   do
    if [ $files -le 3  ]; then echo "No back up of: "$ddir; continue ; else echo "Backup of: "$ddir; fi
    if [ ! -d ${ddir} ] ; then mkdir $ddir ; fi
    cd $ddir 
-   rsync -rlLtgoDv --progress --ignore-errors --exclude 'restart/*' --remove-source-files  --force ${SCRATCH_DIR}/dump_${EXPE}/${ddir}/*.nc .
+   rsync -rlLtgoDv --progress --ignore-errors --exclude '*restart*' --remove-source-files  --force ${SCRATCH_DIR}/dump_${EXPE}/${ddir}/*.nc .
    rsync -rlLtgoDv --progress --ignore-errors --exclude 'restart/*' --force ${SCRATCH_DIR}/dump_${EXPE}/${ddir}/* .
    cd ..
 done 
@@ -29,7 +29,7 @@ done
 echo $PBS_JOBNAME
 num="${PBS_JOBNAME#*_}"
 
-if (( 3 < $num )); then 
+if (( 1 < $num )); then 
   echo "Move file_def's to output every 3 hrs"; 
   if [ -f "/home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_hf" ]; then
     mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml  /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-oce.xml_lf
@@ -46,5 +46,4 @@ else
     mv /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml_lf  /home1/scratch/jmartine/nemo_expt_4.2.0/ice_canal_HR/file_def_nemo-ice.xml
   fi
 fi;
-
 
